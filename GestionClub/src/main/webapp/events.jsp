@@ -1,91 +1,14 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    <%@ page import="club.DatabaseConnection" %> 
-    <%@ page import="club.Club" %> 
-<%@ page import="java.sql.*" %>
-<%@ page import ="java.util.ArrayList"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.Connection, java.sql.PreparedStatement, java.sql.ResultSet, java.sql.SQLException, club.DatabaseConnection" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<!-- Basic Page Info -->
-	<meta charset="utf-8">
-	<title>DeskApp - Bootstrap Admin Dashboard HTML Template</title>
-
-	<!-- Site favicon -->
-	<link rel="apple-touch-icon" sizes="180x180" href="vendors/images/apple-touch-icon.png">
-	<link rel="icon" type="image/png" sizes="32x32" href="vendors/images/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="vendors/images/favicon-16x16.png">
-
-	<!-- Mobile Specific Metas -->
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-	<!-- Google Font -->
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-	<!-- CSS -->
-	<link rel="stylesheet" type="text/css" href="vendors/styles/core.css">
-	<link rel="stylesheet" type="text/css" href="vendors/styles/icon-font.min.css">
-	<link rel="stylesheet" type="text/css" href="src/plugins/datatables/css/dataTables.bootstrap4.min.css">
-	<link rel="stylesheet" type="text/css" href="src/plugins/datatables/css/responsive.bootstrap4.min.css">
-	<link rel="stylesheet" type="text/css" href="vendors/styles/style.css">
-
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-
-		gtag('config', 'UA-119386393-1');
-	</script>
-	<style>
-		.club-cards {
-			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-			gap: 20px;
-			padding: 20px;
-		}
-		.club-card {
-			border-radius: 10px;
-			overflow: hidden;
-			box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-			transition: transform 0.3s ease, box-shadow 0.3s ease;
-			background: white;
-		}
-		.club-card:hover {
-			transform: translateY(-5px);
-			box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-		}
-		.club-image {
-			width: 100%;
-			height: 180px;
-			object-fit: cover;
-		}
-		.club-content {
-			padding: 20px;
-		}
-		.club-title {
-			font-size: 1.2rem;
-			margin-bottom: 10px;
-			color: #333;
-		}
-		.club-description {
-			color: #666;
-			margin-bottom: 15px;
-			font-size: 0.9rem;
-			line-height: 1.5;
-		}
-		.club-actions {
-			display: flex;
-			justify-content: flex-end;
-		}
-		.search-bar {
-			margin-bottom: 20px;
-			padding: 0 20px;
-		}
-		
-		
-		
-		 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Events</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
         :root {
             --primary-color: #4361ee;
             --secondary-color: #3f37c9;
@@ -331,10 +254,43 @@
             width: 100%;
         }
     </style>
+    
+    
 
+	<!-- Basic Page Info -->
+	<meta charset="utf-8">
+	<title>DeskApp - Bootstrap Admin Dashboard HTML Template</title>
+
+	<!-- Site favicon -->
+	<link rel="apple-touch-icon" sizes="180x180" href="vendors/images/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="vendors/images/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="vendors/images/favicon-16x16.png">
+
+	<!-- Mobile Specific Metas -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<!-- Google Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" href="vendors/styles/core.css">
+	<link rel="stylesheet" type="text/css" href="vendors/styles/icon-font.min.css">
+	<link rel="stylesheet" type="text/css" href="src/plugins/jquery-steps/jquery.steps.css">
+	<link rel="stylesheet" type="text/css" href="vendors/styles/style.css">
+    <link rel="stylesheet" type="text/css" href="vendors/styles/siwar.css">
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'UA-119386393-1');
+	</script>
 </head>
 <body>
-	<% 
+	
+<% 
 String email = request.getParameter("email");
 String sql = "SELECT * FROM users WHERE email = ?"; 
 String username="";
@@ -488,7 +444,7 @@ try (Connection c = DatabaseConnection.getConnection();
 						</a>
 					</li>
 					<li>
-						<a href="ajoutermembreclub.jsp" class="dropdown-toggle no-arrow">
+						<a href="ajoutmembreclub.jsp" class="dropdown-toggle no-arrow">
 							<span class="micon fa fa-group"></span><span class="mtext">Clubs</span>
 						</a>
 					</li>
@@ -505,7 +461,6 @@ try (Connection c = DatabaseConnection.getConnection();
 						</a>
 					</li>
 					
-					
 				</ul>
 			</div>
 		</div>
@@ -516,7 +471,7 @@ try (Connection c = DatabaseConnection.getConnection();
 		<div class="pd-ltr-20 xs-pd-20-10">
 			<div class="min-height-200px">
 				
-					
+
     <div class="container">
         <header>
             <h1>Available Events</h1>
@@ -707,16 +662,5 @@ try (Connection c = DatabaseConnection.getConnection();
             });
         }
     </script>
-	<!-- js -->
-	<script src="vendors/scripts/core.js"></script>
-	<script src="vendors/scripts/script.min.js"></script>
-	<script src="vendors/scripts/process.js"></script>
-	<script src="vendors/scripts/layout-settings.js"></script>
-	<script src="src/plugins/apexcharts/apexcharts.min.js"></script>
-	<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
-	<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
-	<script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
-	<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
-	<script src="vendors/scripts/dashboard.js"></script>
 </body>
 </html>

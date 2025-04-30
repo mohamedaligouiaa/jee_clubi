@@ -239,7 +239,7 @@ try (Connection c = DatabaseConnection.getConnection();
 						</a>
 					</li>
 					<li>
-						<a href="ajoutermembreclub.jsp" class="dropdown-toggle no-arrow">
+						<a href="ajoutmembreclub.jsp" class="dropdown-toggle no-arrow">
 							<span class="micon fa fa-group"></span><span class="mtext">Clubs</span>
 						</a>
 					</li>
@@ -277,7 +277,7 @@ try (Connection c = DatabaseConnection.getConnection();
 							<p class="club-description"><%=club.getDescription() %></p>
 							<div class="club-actions">
 								<a href="ClubmemberServlet?action=ajouter&club_id=<%= club.getId() %>&user_id=<%= iduser %>" role="button" class="btn btn-primary">
-									S'inscrire
+									Register
 								</a>
 							</div>
 						</div>
