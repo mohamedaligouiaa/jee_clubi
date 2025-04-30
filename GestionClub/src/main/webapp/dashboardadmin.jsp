@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
     <%@ page import="club.DatabaseConnection" %> 
 <%@ page import="java.sql.*" %>
+<%@ page import="java.util.ArrayList" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,6 +35,7 @@
 
 		gtag('config', 'UA-119386393-1');
 	</script>
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
 <% 
@@ -114,7 +116,7 @@ int nbclubs = 0;
 
 try (Connection c = DatabaseConnection.getConnection();
      Statement stm = c.createStatement(); 
-     ResultSet rs = stm.executeQuery(sql2)) { 
+     ResultSet rs = stm.executeQuery(sql5)) { 
 
     if (rs.next()) {
         nbclubs = rs.getInt(1); 
@@ -123,6 +125,62 @@ try (Connection c = DatabaseConnection.getConnection();
 } catch (SQLException e) {
     e.printStackTrace();
 }
+int[] nbevent = new int[12]; 
+
+try (Connection c = DatabaseConnection.getConnection();
+     Statement stm = c.createStatement()) {
+
+    for (int month = 1; month <= 12; month++) {
+        String sql7 = "SELECT COUNT(*) FROM evenement " +
+                     "WHERE date_event >= '2025-01-01' AND date_event < '2030-01-01' " +
+                     "AND MONTH(date_event) = " + month;
+
+        try (ResultSet rs = stm.executeQuery(sql7)) {
+            if (rs.next()) {
+                nbevent[month - 1] = rs.getInt(1);
+            }
+        }
+    }
+
+} catch (SQLException e) {
+    e.printStackTrace();
+}
+
+// Exemple d'accès : 
+int nbeventJan = nbevent[0];
+int nbeventFev = nbevent[1];
+int nbeventMar = nbevent[2];
+int nbeventavr = nbevent[3];
+int nbeventmai = nbevent[4];
+int nbeventjun = nbevent[5];
+int nbeventjul = nbevent[6];
+int nbeventaout = nbevent[7];
+int nbeventsep = nbevent[8];
+int nbeventoct = nbevent[9];
+int nbeventnov = nbevent[10];
+int nbeventdec = nbevent[11];
+
+int[] nbmember = new int[nbclubs]; 
+
+try (Connection c = DatabaseConnection.getConnection();
+     Statement stm = c.createStatement()) {
+
+    for (int club = 1; club <= nbclubs; club++) {
+        String sql8 = "SELECT COUNT(*) FROM club_membre where club_id= " +club;
+                     
+
+        try (ResultSet rs = stm.executeQuery(sql8)) {
+            if (rs.next()) {
+                nbmember[club - 1] = rs.getInt(1);
+            }
+        }
+    }
+
+} catch (SQLException e) {
+    e.printStackTrace();
+}
+
+
 %>
 
 
@@ -270,11 +328,7 @@ try (Connection c = DatabaseConnection.getConnection();
 						</a>
 						
 					</li>
-					<li>
-						<a href="chatbot.jsp" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-chat3"></span><span class="mtext">Chatbot</span>
-						</a>
-					</li>
+			
 					
 					
 				</ul>
@@ -303,213 +357,660 @@ try (Connection c = DatabaseConnection.getConnection();
         <div class="text-center">
             <i class="icon-copy ion-person" style="font-size: 40px;"></i>
             <div class="h4 mb-0 mt-2"><%=nbusers %></div>
-            <div class="weight-600 font-14">Utilisateurs</div>
+            <div class="weight-600 font-14">User</div>
         </div>
     </div>
 </div>
-				<div class="col-xl-3 mb-30">
-					<div class="card-box height-100-p widget-style1">
-						<div class="d-flex flex-wrap align-items-center">
-							<div class="progress-data">
-								<div id="chart2"></div>
-							</div>
-							<div class="widget-data">
-								<div class="h4 mb-0"><%=nbevents %></div>
-								<div class="weight-600 font-14">Evenements</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-xl-3 mb-30">
-					<div class="card-box height-100-p widget-style1">
-						<div class="d-flex flex-wrap align-items-center">
-							<div class="progress-data">
-								<div id="chart3"></div>
-							</div>
-							<div class="widget-data">
-								<div class="h4 mb-0"><%=nbclubs %></div>
-								<div class="weight-600 font-14">Clubs</div>
-							</div>
-						</div>
-					</div>
-				</div>
+<div class="col-xl-3 mb-30">
+    <div class="card-box height-100-p widget-style1 d-flex justify-content-center align-items-center">
+        <div class="text-center">
+            <i class="icon-copy fa fa-bullhorn" style="font-size: 40px;"></i>
+                        <div class="h4 mb-0 mt-2"><%=nbevents %></div>
+            <div class="weight-600 font-14">Event</div>
+        </div>
+    </div>
+</div>
+<div class="col-xl-3 mb-30">
+    <div class="card-box height-100-p widget-style1 d-flex justify-content-center align-items-center">
+        <div class="text-center">
+            <i class="icon-copy fi-torsos-all" style="font-size: 40px;"></i>
+                        <div class="h4 mb-0 mt-2"><%=nbclubs %></div>
+             
+            <div class="weight-600 font-14">Club</div>
+        </div>
+    </div>
+</div>
+<div class="col-xl-3 mb-30">
+    <div class="card-box height-100-p widget-style1 d-flex justify-content-center align-items-center">
+        <div class="text-center">
+            <i class="icon-copy fa fa-drivers-license" style="font-size: 40px;"></i>
+                        <div class="h4 mb-0 mt-2"><%=nbmembers %></div>
+             
+            <div class="weight-600 font-14">Members</div>
+        </div>
+    </div>
+</div>
+
 				
-				<div class="col-xl-3 mb-30">
-					<div class="card-box height-100-p widget-style1">
-						<div class="d-flex flex-wrap align-items-center">
-							<div class="progress-data">
-								<div id="chart4"></div>
-							</div>
-							<div class="widget-data">
-								<div class="h4 mb-0"><%=nbmembers %></div>
-								<div class="weight-600 font-14">Membres</div>
-							</div>
-						</div>
-					</div>
-				</div>
 			</div>
 			<div class="row">
 				<div class="col-xl-8 mb-30">
 					<div class="card-box height-100-p pd-20">
-						<h2 class="h4 mb-20">Activity</h2>
+						<h2 class="h4 mb-20">Event/Month</h2>
 						<div id="chart5"></div>
 					</div>
 				</div>
-				<div class="col-xl-4 mb-30">
+				<div class="col-xl-8 mb-30">
 					<div class="card-box height-100-p pd-20">
-						<h2 class="h4 mb-20">Lead Target</h2>
-						<div id="chart6"></div>
+						<h2 class="h4 mb-20">Members/Club</h2>
+						<div id="chart9"></div>
 					</div>
 				</div>
+				
 			</div>
-			<div class="card-box mb-30">
-				<h2 class="h4 pd-20">Best Selling Products</h2>
-				<table class="data-table table nowrap">
-					<thead>
-						<tr>
-							<th class="table-plus datatable-nosort">Product</th>
-							<th>Name</th>
-							<th>Color</th>
-							<th>Size</th>
-							<th>Price</th>
-							<th>Oty</th>
-							<th class="datatable-nosort">Action</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td class="table-plus">
-								<img src="vendors/images/product-1.jpg" width="70" height="70" alt="">
-							</td>
-							<td>
-								<h5 class="font-16">Shirt</h5>
-								by John Doe
-							</td>
-							<td>Black</td>
-							<td>M</td>
-							<td>$1000</td>
-							<td>1</td>
-							<td>
-								<div class="dropdown">
-									<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-										<i class="dw dw-more"></i>
-									</a>
-									<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-										<a class="dropdown-item" href="#"><i class="dw dw-eye"></i> View</a>
-										<a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Edit</a>
-										<a class="dropdown-item" href="#"><i class="dw dw-delete-3"></i> Delete</a>
-									</div>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td class="table-plus">
-								<img src="vendors/images/product-2.jpg" width="70" height="70" alt="">
-							</td>
-							<td>
-								<h5 class="font-16">Boots</h5>
-								by Lea R. Frith
-							</td>
-							<td>brown</td>
-							<td>9UK</td>
-							<td>$900</td>
-							<td>1</td>
-							<td>
-								<div class="dropdown">
-									<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-										<i class="dw dw-more"></i>
-									</a>
-									<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-										<a class="dropdown-item" href="#"><i class="dw dw-eye"></i> View</a>
-										<a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Edit</a>
-										<a class="dropdown-item" href="#"><i class="dw dw-delete-3"></i> Delete</a>
-									</div>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td class="table-plus">
-								<img src="vendors/images/product-3.jpg" width="70" height="70" alt="">
-							</td>
-							<td>
-								<h5 class="font-16">Hat</h5>
-								by Erik L. Richards
-							</td>
-							<td>Orange</td>
-							<td>M</td>
-							<td>$100</td>
-							<td>4</td>
-							<td>
-								<div class="dropdown">
-									<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-										<i class="dw dw-more"></i>
-									</a>
-									<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-										<a class="dropdown-item" href="#"><i class="dw dw-eye"></i> View</a>
-										<a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Edit</a>
-										<a class="dropdown-item" href="#"><i class="dw dw-delete-3"></i> Delete</a>
-									</div>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td class="table-plus">
-								<img src="vendors/images/product-4.jpg" width="70" height="70" alt="">
-							</td>
-							<td>
-								<h5 class="font-16">Long Dress</h5>
-								by Renee I. Hansen
-							</td>
-							<td>Gray</td>
-							<td>L</td>
-							<td>$1000</td>
-							<td>1</td>
-							<td>
-								<div class="dropdown">
-									<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-										<i class="dw dw-more"></i>
-									</a>
-									<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-										<a class="dropdown-item" href="#"><i class="dw dw-eye"></i> View</a>
-										<a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Edit</a>
-										<a class="dropdown-item" href="#"><i class="dw dw-delete-3"></i> Delete</a>
-									</div>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td class="table-plus">
-								<img src="vendors/images/product-5.jpg" width="70" height="70" alt="">
-							</td>
-							<td>
-								<h5 class="font-16">Blazer</h5>
-								by Vicki M. Coleman
-							</td>
-							<td>Blue</td>
-							<td>M</td>
-							<td>$1000</td>
-							<td>1</td>
-							<td>
-								<div class="dropdown">
-									<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-										<i class="dw dw-more"></i>
-									</a>
-									<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-										<a class="dropdown-item" href="#"><i class="dw dw-eye"></i> View</a>
-										<a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Edit</a>
-										<a class="dropdown-item" href="#"><i class="dw dw-delete-3"></i> Delete</a>
-									</div>
-								</div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+			
 			<div class="footer-wrap pd-20 mb-20 card-box">
-				DeskApp - Bootstrap 4 Admin Template By <a href="https://github.com/dropways" target="_blank">Ankit Hingarajiya</a>
+				Clubi - ALL RIGHTS RESERVED
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+	var options = {
+			series: [80],
+			grid: {
+				padding: {
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0
+				},
+			},
+			chart: {
+				height: 100,
+				width: 70,
+				type: 'radialBar',
+			},
+			plotOptions: {
+				radialBar: {
+					hollow: {
+						size: '50%',
+					},
+					dataLabels: {
+						name: {
+							show: false,
+							color: '#fff'
+						},
+						value: {
+							show: true,
+							color: '#333',
+							offsetY: 5,
+							fontSize: '15px'
+						}
+					}
+				}
+			},
+			colors: ['#ecf0f4'],
+			fill: {
+				type: 'gradient',
+				gradient: {
+					shade: 'dark',
+					type: 'diagonal1',
+					shadeIntensity: 0.8,
+					gradientToColors: ['#1b00ff'],
+					inverseColors: false,
+					opacityFrom: [1, 0.2],
+					opacityTo: 1,
+					stops: [0, 100],
+				}
+			},
+			states: {
+				normal: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+				hover: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+				active: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+			}
+		};
+
+		var options2 = {
+			series: [70],
+			grid: {
+				padding: {
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0
+				},
+			},
+			chart: {
+				height: 100,
+				width: 70,
+				type: 'radialBar',
+			},
+			plotOptions: {
+				radialBar: {
+					hollow: {
+						size: '50%',
+					},
+					dataLabels: {
+						name: {
+							show: false,
+							color: '#fff'
+						},
+						value: {
+							show: true,
+							color: '#333',
+							offsetY: 5,
+							fontSize: '15px'
+						}
+					}
+				}
+			},
+			colors: ['#ecf0f4'],
+			fill: {
+				type: 'gradient',
+				gradient: {
+					shade: 'dark',
+					type: 'diagonal1',
+					shadeIntensity: 1,
+					gradientToColors: ['#009688'],
+					inverseColors: false,
+					opacityFrom: [1, 0.2],
+					opacityTo: 1,
+					stops: [0, 100],
+				}
+			},
+			states: {
+				normal: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+				hover: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+				active: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+			}
+		};
+
+		var options3 = {
+			series: [75],
+			grid: {
+				padding: {
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0
+				},
+			},
+			chart: {
+				height: 100,
+				width: 70,
+				type: 'radialBar',
+			},
+			plotOptions: {
+				radialBar: {
+					hollow: {
+						size: '50%',
+					},
+					dataLabels: {
+						name: {
+							show: false,
+							color: '#fff'
+						},
+						value: {
+							show: true,
+							color: '#333',
+							offsetY: 5,
+							fontSize: '15px'
+						}
+					}
+				}
+			},
+			colors: ['#ecf0f4'],
+			fill: {
+				type: 'gradient',
+				gradient: {
+					shade: 'dark',
+					type: 'diagonal1',
+					shadeIntensity: 0.8,
+					gradientToColors: ['#f56767'],
+					inverseColors: false,
+					opacityFrom: [1, 0.2],
+					opacityTo: 1,
+					stops: [0, 100],
+				}
+			},
+			states: {
+				normal: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+				hover: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+				active: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+			}
+		};
+
+		var options4 = {
+			series: [85],
+			grid: {
+				padding: {
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0
+				},
+			},
+			chart: {
+				height: 100,
+				width: 70,
+				type: 'radialBar',
+			},
+			plotOptions: {
+				radialBar: {
+					hollow: {
+						size: '50%',
+					},
+					dataLabels: {
+						name: {
+							show: false,
+							color: '#fff'
+						},
+						value: {
+							show: true,
+							color: '#333',
+							offsetY: 5,
+							fontSize: '15px'
+						}
+					}
+				}
+			},
+			colors: ['#ecf0f4'],
+			fill: {
+				type: 'gradient',
+				gradient: {
+					shade: 'dark',
+					type: 'diagonal1',
+					shadeIntensity: 0.8,
+					gradientToColors: ['#2979ff'],
+					inverseColors: false,
+					opacityFrom: [1, 0.5],
+					opacityTo: 1,
+					stops: [0, 100],
+				}
+			},
+			states: {
+				normal: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+				hover: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+				active: {
+					filter: {
+						type: 'none',
+						value: 0,
+					}
+				},
+			}
+		};
+
+		var options5 = {
+			chart: {
+				height: 350,
+				type: 'bar',
+				parentHeightOffset: 0,
+				fontFamily: 'Poppins, sans-serif',
+				toolbar: {
+					show: false,
+				},
+			},
+			colors: ['#1b00ff', '#f56767'],
+			grid: {
+				borderColor: '#c7d2dd',
+				strokeDashArray: 5,
+			},
+			plotOptions: {
+				bar: {
+					horizontal: false,
+					columnWidth: '25%',
+					endingShape: 'rounded'
+				},
+			},
+			dataLabels: {
+				enabled: false
+			},
+			stroke: {
+				show: true,
+				width: 2,
+				colors: ['transparent']
+			},
+			series: [{
+				name: 'In Progress',
+				data: [<%=nbeventJan%>, <%=nbeventFev%>, <%=nbeventMar%>, <%=nbeventavr%>, <%=nbeventmai%>, <%=nbeventjun%>,<%=nbeventjul%>,<%=nbeventaout%>,<%=nbeventsep%>,<%=nbeventoct%>,<%=nbeventnov%>,<%=nbeventdec%>]
+			}],
+			xaxis: {
+				categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','July','Aug','Sep','Oct','Nov','Dec'],
+				labels: {
+					style: {
+						colors: ['#353535'],
+						fontSize: '16px',
+					},
+				},
+				axisBorder: {
+					color: '#8fa6bc',
+				}
+			},
+			yaxis: {
+				title: {
+					text: ''
+				},
+				labels: {
+					style: {
+						colors: '#353535',
+						fontSize: '16px',
+					},
+				},
+				axisBorder: {
+					color: '#f00',
+				}
+			},
+			legend: {
+				horizontalAlign: 'right',
+				position: 'top',
+				fontSize: '16px',
+				offsetY: 0,
+				labels: {
+					colors: '#353535',
+				},
+				markers: {
+					width: 10,
+					height: 10,
+					radius: 15,
+				},
+				itemMargin: {
+					vertical: 0
+				},
+			},
+			fill: {
+				opacity: 1
+
+			},
+			tooltip: {
+				style: {
+					fontSize: '15px',
+					fontFamily: 'Poppins, sans-serif',
+				},
+				y: {
+					formatter: function(val) {
+						return val
+					}
+				}
+			}
+		}
+		var options9 = {
+				chart: {
+					height: 350,
+					type: 'bar',
+					parentHeightOffset: 0,
+					fontFamily: 'Poppins, sans-serif',
+					toolbar: {
+						show: false,
+					},
+				},
+				colors: ['#1b00ff', '#f56767'],
+				grid: {
+					borderColor: '#c7d2dd',
+					strokeDashArray: 5,
+				},
+				plotOptions: {
+					bar: {
+						horizontal: false,
+						columnWidth: '25%',
+						endingShape: 'rounded'
+					},
+				},
+				dataLabels: {
+					enabled: false
+				},
+				stroke: {
+					show: true,
+					width: 2,
+					colors: ['transparent']
+				},
+				<%
+				String sql9 = "SELECT * FROM club;";
+				ArrayList<String> clubNames = new ArrayList<>();
+				ArrayList<Integer> membresList = new ArrayList<>();
+
+				try (Connection c = DatabaseConnection.getConnection();
+				     Statement stm = c.createStatement();
+				     ResultSet rs = stm.executeQuery(sql9)) {
+
+				    while (rs.next()) {
+				        int clubId = rs.getInt("id");
+				        String nomClub = rs.getString("nom");
+				        clubNames.add("\"" + nomClub + "\""); // pour un tableau JS de chaînes
+
+				        // Récupérer le nombre de membres de chaque club
+				        String sql17 = "SELECT COUNT(*) FROM club_membre WHERE club_id=" + clubId;
+				        try (Statement stm2 = c.createStatement();
+				             ResultSet rs2 = stm2.executeQuery(sql17)) {
+
+				            if (rs2.next()) {
+				                membresList.add(rs2.getInt(1));
+				            } else {
+				                membresList.add(0);
+				            }
+				        }
+				    }
+				} catch (SQLException e) {
+				    e.printStackTrace();
+				}
+
+				// Convertir en chaînes pour JavaScript
+				String clubNamesJS = clubNames.toString(); // ["club1", "club2", ...]
+				String membresJS = membresList.toString(); // [4, 7, 2, ...]
+				%>
+
+				series: [{
+					name: 'In Progress',
+					data: <%= membresJS %>
+				}],
+				xaxis: {
+					
+					categories:  <%= clubNamesJS %>,
+					labels: {
+						style: {
+							colors: ['#353535'],
+							fontSize: '16px',
+						},
+					},
+					axisBorder: {
+						color: '#8fa6bc',
+					}
+				},
+				yaxis: {
+					title: {
+						text: ''
+					},
+					labels: {
+						style: {
+							colors: '#353535',
+							fontSize: '16px',
+						},
+					},
+					axisBorder: {
+						color: '#f00',
+					}
+				},
+				legend: {
+					horizontalAlign: 'right',
+					position: 'top',
+					fontSize: '16px',
+					offsetY: 0,
+					labels: {
+						colors: '#353535',
+					},
+					markers: {
+						width: 10,
+						height: 10,
+						radius: 15,
+					},
+					itemMargin: {
+						vertical: 0
+					},
+				},
+				fill: {
+					opacity: 1
+
+				},
+				tooltip: {
+					style: {
+						fontSize: '15px',
+						fontFamily: 'Poppins, sans-serif',
+					},
+					y: {
+						formatter: function(val) {
+							return val
+						}
+					}
+				}
+			}
+
+		var options6 = {
+			series: [73],
+			chart: {
+				height: 350,
+				type: 'radialBar',
+				offsetY: 0
+			},
+			colors: ['#0B132B', '#222222'],
+			plotOptions: {
+				radialBar: {
+					startAngle: -135,
+					endAngle: 135,
+					dataLabels: {
+						name: {
+							fontSize: '16px',
+							color: undefined,
+							offsetY: 120
+						},
+						value: {
+							offsetY: 76,
+							fontSize: '22px',
+							color: undefined,
+							formatter: function(val) {
+								return val + "%";
+							}
+						}
+					}
+				}
+			},
+			fill: {
+				type: 'gradient',
+				gradient: {
+					shade: 'dark',
+					shadeIntensity: 0.15,
+					inverseColors: false,
+					opacityFrom: 1,
+					opacityTo: 1,
+					stops: [0, 50, 65, 91]
+				},
+			},
+			stroke: {
+				dashArray: 4
+			},
+			labels: ['Achieve Goals'],
+		};
+
+		var chart = new ApexCharts(document.querySelector("#chart"), options);
+		chart.render();
+
+		var chart2 = new ApexCharts(document.querySelector("#chart2"), options2);
+		chart2.render();
+
+		var chart3 = new ApexCharts(document.querySelector("#chart3"), options3);
+		chart3.render();
+
+		var chart4 = new ApexCharts(document.querySelector("#chart4"), options4);
+		chart4.render();
+
+		var chart5 = new ApexCharts(document.querySelector("#chart5"), options5);
+		chart5.render();
+
+		var chart6 = new ApexCharts(document.querySelector("#chart6"), options6);
+		chart6.render();
+		var chart9 = new ApexCharts(document.querySelector("#chart9"), options9);
+		chart9.render();
+
+
+		// datatable init
+		$('document').ready(function() {
+			$('.data-table').DataTable({
+				scrollCollapse: true,
+				autoWidth: true,
+				responsive: true,
+				searching: false,
+				bLengthChange: false,
+				bPaginate: false,
+				bInfo: false,
+				columnDefs: [{
+					targets: "datatable-nosort",
+					orderable: false,
+				}],
+				"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+				"language": {
+					"info": "_START_-_END_ of _TOTAL_ entries",
+					searchPlaceholder: "Search",
+					paginate: {
+						next: '<i class="ion-chevron-right"></i>',
+						previous: '<i class="ion-chevron-left"></i>'
+					}
+				},
+			});
+		});
+	</script>
 	<!-- js -->
 	<script src="vendors/scripts/core.js"></script>
 	<script src="vendors/scripts/script.min.js"></script>
@@ -520,6 +1021,6 @@ try (Connection c = DatabaseConnection.getConnection();
 	<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
 	<script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
 	<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
-	<script src="vendors/scripts/dashboard.js"></script>
+	
 </body>
 </html>
