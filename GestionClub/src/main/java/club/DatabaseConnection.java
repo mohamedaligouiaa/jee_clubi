@@ -12,7 +12,7 @@ public class DatabaseConnection {
             String nomDB = "club";
             String urlDB = "jdbc:mysql://localhost:3306/" + nomDB;
             String login = "root";
-            String mot_de_passe = "magdell21102018";
+            String mot_de_passe = "Admin123*";
 
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver"); // Charger le driver MySQL

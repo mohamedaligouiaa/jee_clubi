@@ -19,12 +19,12 @@ import java.sql.SQLException;
  * Servlet implementation class ClubServlet
  */
 @MultipartConfig(
-	    fileSizeThreshold = 1024 * 1024 * 2,
-	    maxFileSize = 1024 * 1024 * 10,
-	    maxRequestSize = 1024 * 1024 * 50
-	)
+        fileSizeThreshold = 1024 * 1024 * 2,
+        maxFileSize = 1024 * 1024 * 10,
+        maxRequestSize = 1024 * 1024 * 50
+    )
 public class ClubServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private static final String UPLOAD_DIR = "/vendors/images";
 
     /**
@@ -33,10 +33,11 @@ public class ClubServlet extends HttpServlet {
     public ClubServlet() {
         // TODO Auto-generated constructor stub
     }
-    private void ajoutClub(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    
+    private void addClub(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String sql = "INSERT INTO club (image, nom, description) VALUES (?, ?, ?);";  
         
-        String nom = request.getParameter("nom");
+        String name = request.getParameter("nom");
         String description = request.getParameter("description");
         Part filePart = request.getPart("image");
         String imageName = null;
@@ -46,100 +47,104 @@ public class ClubServlet extends HttpServlet {
             String fileExtension = fileName.substring(fileName.lastIndexOf("."));
             imageName = "img_" + System.currentTimeMillis() + fileExtension;
             
-            // Définir le chemin correct vers le dossier images dans webapp/vendors/images
+            // Set the correct path to the images folder in webapp/vendors/images
             String uploadPath = getServletContext().getRealPath(UPLOAD_DIR);
-            System.out.println("Chemin absolu du dossier d'upload : " + uploadPath);
+            System.out.println("Absolute upload folder path: " + uploadPath);
             
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
                 boolean created = uploadDir.mkdirs();
                 if (created) {
-                    System.out.println("✅ Dossier créé : " + uploadPath);
+                    System.out.println("✅ Folder created: " + uploadPath);
                 } else {
-                    System.out.println("❌ Impossible de créer le dossier !");
+                    System.out.println("❌ Failed to create folder!");
                 }
             }
             
-            // Enregistrer l'image
+            // Save the image
             filePart.write(uploadPath + File.separator + imageName);
-            System.out.println("✅ Image enregistrée avec succès : " + uploadPath + File.separator + imageName);
+            System.out.println("✅ Image saved successfully: " + uploadPath + File.separator + imageName);
         }
+        
         try (Connection c = DatabaseConnection.getConnection();
              PreparedStatement pst = c.prepareStatement(sql)) {
             
             pst.setString(1, imageName);
-            pst.setString(2, nom);
+            pst.setString(2, name);
             pst.setString(3, description);
             pst.executeUpdate();
             
-            response.sendRedirect("clubs.jsp?success=Club ajouté avec succès");
+            response.sendRedirect("clubs.jsp?success=Club added successfully");
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect("clubs.jsp?error=Erreur lors de l'ajout du club");
+            response.sendRedirect("clubs.jsp?error=Error while adding club");
         }
     }
 
-
-    private void modifierclub (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-    	String sql ="UPDATE club SET nom=? , description = ? WHERE id=? ;";
-    	int id = Integer.parseInt(request.getParameter("id"));
-    	String nom = request.getParameter("nom");
-    	String description = request.getParameter("description");
-    	try {
-    		Connection c = DatabaseConnection.getConnection();
-    		PreparedStatement pst = c.prepareStatement(sql);
-    		
-    		pst.setString(1, nom);
-    		pst.setString(2, description);
-    		pst.setInt(3, id);
-    		pst.executeUpdate();
-    	}catch(SQLException e) {
-    		e.printStackTrace();
-    	}
-    	
-    	
-    }
-    private void supprimerclub (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-    	String sql ="DELETE FROM club WHERE id=? ;";
-    	int id = Integer.parseInt(request.getParameter("id"));
-    	try {
-    		Connection c = DatabaseConnection.getConnection();
-    		PreparedStatement pst = c.prepareStatement(sql);
-    		pst.setInt(1, id);
-    		pst.executeUpdate();
-    	}catch(SQLException e) {
-    		e.printStackTrace();
-    	}
-    	
-    	
+    private void updateClub(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String sql = "UPDATE club SET nom=?, description=? WHERE id=?;";
+        int id = Integer.parseInt(request.getParameter("id"));
+        String name = request.getParameter("nom");
+        String description = request.getParameter("description");
+        
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement pst = c.prepareStatement(sql)) {
+            
+            pst.setString(1, name);
+            pst.setString(2, description);
+            pst.setInt(3, id);
+            pst.executeUpdate();
+            
+            response.sendRedirect("clubs.jsp?success=Club updated successfully");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendRedirect("clubs.jsp?error=Error while updating club");
+        }
     }
     
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		 String action = request.getParameter("action");
+    private void deleteClub(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String sql = "DELETE FROM club WHERE id=?;";
+        int id = Integer.parseInt(request.getParameter("id"));
+        
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement pst = c.prepareStatement(sql)) {
+            
+            pst.setInt(1, id);
+            pst.executeUpdate();
+            
+            response.sendRedirect("clubs.jsp?success=Club deleted successfully");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendRedirect("clubs.jsp?error=Error while deleting club");
+        }
+    }
+    
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
 
-	     if ("supprimer".equals(action)) {
-	    	 supprimerclub(request, response);
-		} 
-			 
-	}
+        if ("supprimer".equals(action)) {
+            deleteClub(request, response);
+        } else if ("afficherAjout".equals(action)) {
+            // Redirect to ajoutclub.jsp page
+            response.sendRedirect("ajoutclub.jsp");
+        }
+    }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
         if ("ajouter".equals(action)) {
-		    ajoutClub(request, response);
-		} else if ("modifier".equals(action)) {
-		    modifierclub(request, response);
-		} else {
-			System.out.println("nonnnn");
-		}
+            addClub(request, response);
+        } else if ("modifier".equals(action)) {
+            updateClub(request, response);
+        } else {
+            System.out.println("noooo");
+        }
     }
-
 }
