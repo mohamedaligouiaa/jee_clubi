@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.Connection, java.sql.PreparedStatement, java.sql.ResultSet, java.sql.SQLException, club.DatabaseConnection" %>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket d'Inscription</title>
+    <title>Registration Ticket</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -236,8 +236,16 @@
             
             if (rs.next()) {
                 String heureEvent = rs.getString("heure");
-                if(heureEvent != null && heureEvent.length() > 5) {
-                    heureEvent = heureEvent.substring(0, 5);
+                // Format time to display only HH:mm
+                if (heureEvent != null && !heureEvent.trim().isEmpty()) {
+                    if (heureEvent.contains(":")) {
+                        String[] parts = heureEvent.split(":");
+                        if (parts.length >= 2) {
+                            heureEvent = parts[0] + ":" + parts[1];
+                        }
+                    }
+                } else {
+                    heureEvent = "Not specified";
                 }
     %>
     <div class="ticket-container">
@@ -245,34 +253,34 @@
             <div class="watermark">TICKET</div>
             
             <div class="ticket-header">
-                <h2 class="ticket-title">INSCRIPTION CONFIRMÉE</h2>
-                <p class="ticket-subtitle">Votre place est réservée</p>
+                <h2 class="ticket-title">REGISTRATION CONFIRMED</h2>
+                <p class="ticket-subtitle">Your spot is reserved</p>
             </div>
             
             <div class="ticket-body">
                 <div class="ticket-info">
                     <div class="info-row">
-                        <span class="info-label">Événement:</span>
+                        <span class="info-label">Event:</span>
                         <span class="info-value"><%= rs.getString("titre") %></span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Club:</span>
-                        <span class="info-value"><%= rs.getString("club_nom") != null ? rs.getString("club_nom") : "Non spécifié" %></span>
+                        <span class="info-value"><%= rs.getString("club_nom") != null ? rs.getString("club_nom") : "Not specified" %></span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Date:</span>
                         <span class="info-value"><%= rs.getString("date_event") %></span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">Heure:</span>
-                        <span class="info-value"><%= heureEvent != null ? heureEvent : "Non spécifié" %></span>
+                        <span class="info-label">Time:</span>
+                        <span class="info-value"><%= heureEvent %></span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">Lieu:</span>
+                        <span class="info-label">Location:</span>
                         <span class="info-value"><%= rs.getString("lieu") %></span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">Catégorie:</span>
+                        <span class="info-label">Category:</span>
                         <span class="info-value"><%= rs.getString("categorie") %></span>
                     </div>
                 </div>
@@ -280,19 +288,19 @@
                 <div class="ticket-qrcode">
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<%= rs.getString("id") %>-<%= System.currentTimeMillis() %>" 
                          alt="QR Code">
-                    <div class="ticket-number">N°: <%= rs.getString("id") %>-<%= System.currentTimeMillis() %></div>
+                    <div class="ticket-number">ID: <%= rs.getString("id") %>-<%= System.currentTimeMillis() %></div>
                 </div>
             </div>
             
             <div class="ticket-rip"></div>
             
             <div class="ticket-footer">
-                <p>Présentez ce ticket à l'entrée de l'événement</p>
-                <p><small>Un email de confirmation vous a été envoyé</small></p>
+                <p>Present this ticket at the event entrance</p>
+                <p><small>A confirmation email has been sent to you</small></p>
                 
                 <div class="ticket-actions">
                     <button class="btn btn-primary" onclick="window.print()">
-                        <i class="fas fa-print"></i> Imprimer
+                        <i class="fas fa-print"></i> Print
                     </button>
                 </div>
             </div>
@@ -300,10 +308,10 @@
     </div>
     <%
             } else {
-                out.println("<p>Événement non trouvé</p>");
+                out.println("<p>Event not found</p>");
             }
         } catch (SQLException e) {
-            out.println("<p>Erreur: " + e.getMessage() + "</p>");
+            out.println("<p>Error: " + e.getMessage() + "</p>");
             e.printStackTrace();
         } finally {
             if (rs != null) rs.close();
