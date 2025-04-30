@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 	<meta charset="utf-8">
-	<title>DeskApp - Connexion</title>
+	<title>Clubi - Connexion</title>
 
 	<!-- Favicon -->
 	<link rel="apple-touch-icon" sizes="180x180" href="vendors/images/apple-touch-icon.png">
@@ -39,7 +39,7 @@
 			</div>
 			<div class="login-menu">
 				<ul>
-					<li><a href="register.html">S'inscrire</a></li>
+					<li><a href="register.jsp">S'inscrire</a></li>
 				</ul>
 			</div>
 		</div>

@@ -1,9 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     <%@ page import="club.DatabaseConnection" %> 
-    <%@ page import="club.Club" %> 
 <%@ page import="java.sql.*" %>
-<%@ page import ="java.util.ArrayList"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,9 +22,8 @@
 	<!-- CSS -->
 	<link rel="stylesheet" type="text/css" href="vendors/styles/core.css">
 	<link rel="stylesheet" type="text/css" href="vendors/styles/icon-font.min.css">
-	<link rel="stylesheet" type="text/css" href="src/plugins/datatables/css/dataTables.bootstrap4.min.css">
-	<link rel="stylesheet" type="text/css" href="src/plugins/datatables/css/responsive.bootstrap4.min.css">
 	<link rel="stylesheet" type="text/css" href="vendors/styles/style.css">
+
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"></script>
@@ -37,69 +34,20 @@
 
 		gtag('config', 'UA-119386393-1');
 	</script>
-	<style>
-		.club-cards {
-			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-			gap: 20px;
-			padding: 20px;
-		}
-		.club-card {
-			border-radius: 10px;
-			overflow: hidden;
-			box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-			transition: transform 0.3s ease, box-shadow 0.3s ease;
-			background: white;
-		}
-		.club-card:hover {
-			transform: translateY(-5px);
-			box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-		}
-		.club-image {
-			width: 100%;
-			height: 180px;
-			object-fit: cover;
-		}
-		.club-content {
-			padding: 20px;
-		}
-		.club-title {
-			font-size: 1.2rem;
-			margin-bottom: 10px;
-			color: #333;
-		}
-		.club-description {
-			color: #666;
-			margin-bottom: 15px;
-			font-size: 0.9rem;
-			line-height: 1.5;
-		}
-		.club-actions {
-			display: flex;
-			justify-content: flex-end;
-		}
-		.search-bar {
-			margin-bottom: 20px;
-			padding: 0 20px;
-		}
-	</style>
 </head>
 <body>
-	<% 
-String email = request.getParameter("email");
+<% 
 String sql = "SELECT * FROM users WHERE email = ?"; 
 String username="";
 String image="";
-int iduser = -1;
 try (Connection c = DatabaseConnection.getConnection();
      PreparedStatement pst = c.prepareStatement(sql)) {
-     pst.setString(1, email);
+     pst.setString(1, request.getParameter("email"));
      
      try (ResultSet rs = pst.executeQuery()) {
          if (rs.next()) {
              username = rs.getString("username");
              image = rs.getString("image");
-             iduser = rs.getInt("id");
          }
      }
 } catch (SQLException e) {
@@ -204,6 +152,8 @@ try (Connection c = DatabaseConnection.getConnection();
 					<a href="javascript:void(0);" class="btn btn-outline-primary sidebar-dark active">Dark</a>
 				</div>
 
+				
+
 				<div class="reset-options pt-30 text-center">
 					<button class="btn btn-danger" id="reset-settings">Reset Settings</button>
 				</div>
@@ -226,7 +176,7 @@ try (Connection c = DatabaseConnection.getConnection();
 					</li>
 					
 			</ul>
-		</div>
+		</div> 
 		
 		
 		<div class="menu-block customscroll">
@@ -239,7 +189,7 @@ try (Connection c = DatabaseConnection.getConnection();
 						</a>
 					</li>
 					<li>
-						<a href="ajoutermembreclub.jsp" class="dropdown-toggle no-arrow">
+						<a href="ajoutmembreclub.jsp" class="dropdown-toggle no-arrow">
 							<span class="micon fa fa-group"></span><span class="mtext">Clubs</span>
 						</a>
 					</li>
@@ -261,36 +211,122 @@ try (Connection c = DatabaseConnection.getConnection();
 			</div>
 		</div>
 	</div>
+	<div class="mobile-menu-overlay"></div>
 
 	<div class="main-container">
 		<div class="pd-ltr-20">
-			<div class="card-box mb-30">
-				<h2 class="h4 pd-20">Clubs</h2>
-				
-				<div class="club-cards">
-					<% ArrayList<Club> clubs = Club.afficherClubs();
-					for ( Club club : clubs ){%>
-					<div class="club-card">
-						<img src="vendors/images/<%=club.getImage() %>" alt="<%=club.getNom() %>" class="club-image">
-						<div class="club-content">
-							<h3 class="club-title"><%=club.getNom() %></h3>
-							<p class="club-description"><%=club.getDescription() %></p>
-							<div class="club-actions">
-								<a href="ClubmemberServlet?action=ajouter&club_id=<%= club.getId() %>&user_id=<%= iduser %>" role="button" class="btn btn-primary">
-									S'inscrire
-								</a>
-							</div>
-						</div>
+			<div class="card-box pd-20 height-100-p mb-30">
+				<div class="row align-items-center">
+					<div class="col-md-4">
+						<img src="vendors/images/students_image.png" alt="">
 					</div>
-					<% } %>
+					<div class="col-md-8">
+						<h4 class="font-20 weight-500 mb-10 text-capitalize">
+							Welcome back <div class="weight-600 font-30 text-blue">Johnny Brown!</div>
+						</h4>
+						<p class="font-18 max-width-600">Happy to see you back on the platform. Check out your clubs, stay updated on upcoming events, and actively take part in student life!</p>
+					</div>
 				</div>
 			</div>
-			<div class="footer-wrap pd-20 mb-20 card-box">
-				Clubi -© All rights reserved
-			</div>
+		<div class="row">
+    <!-- Bouton Clubs - Centré avec nouvelle couleur -->
+    <div class="col-xl-6 col-lg-6 mb-30">
+        <button onclick="location.href='clubs.jsp';" class="card-box height-100-p widget-style1 btn-clickable" 
+                style="width: 100%; border: none; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); cursor: pointer; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+            <div class="progress-data mb-3">
+                <img src="vendors/images/multiple-users-silhouette.png" alt="Clubs" style="width: 70px; height: 70px; filter: brightness(0) invert(1);">
+            </div>
+            <div class="widget-data">
+                <div class="h3 mb-2" style="font-size: 26px; color: white; font-weight: 600;">Clubs</div>
+                <div class="weight-600 font-14" style="font-size: 16px; color: rgba(255,255,255,0.8);">See your clubs</div>
+            </div>
+        </button>
+    </div>
+    
+    <!-- Bouton Events - Centré avec nouvelle couleur -->
+    <div class="col-xl-6 col-lg-6 mb-30">
+        <button onclick="location.href='events.jsp';" class="card-box height-100-p widget-style1 btn-clickable" 
+                style="width: 100%; border: none; background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%); cursor: pointer; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+            <div class="progress-data mb-3">
+                <img src="vendors/images/event.png" alt="Events" style="width: 70px; height: 70px; filter: brightness(0) invert(1);">
+            </div>
+            <div class="widget-data">
+                <div class="h3 mb-2" style="font-size: 26px; color: white; font-weight: 600;">Events</div>
+                <div class="weight-600 font-14" style="font-size: 16px; color: rgba(255,255,255,0.8);">See your events</div>
+            </div>
+        </button>
+    </div>
+</div>
+
+<style>
+/* Styles améliorés pour les boutons */
+.btn-clickable {
+    transition: all 0.3s ease;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: none !important;
+}
+
+.btn-clickable:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
+}
+
+/* Effet de transition sur les images */
+.progress-data img {
+    transition: transform 0.3s ease;
+}
+
+.btn-clickable:hover .progress-data img {
+    transform: scale(1.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .btn-clickable {
+        padding: 20px !important;
+    }
+    
+    .progress-data img {
+        width: 60px !important;
+        height: 60px !important;
+    }
+    
+    .h3 {
+        font-size: 22px !important;
+    }
+}
+</style>
+			
+			
 		</div>
 	</div>
-	<!-- js -->
+	<script>
+// Gestion des clics pour tous les boutons
+document.querySelectorAll('.btn-clickable').forEach(button => {
+    button.addEventListener('click', function() {
+        const action = this.querySelector('.h4').textContent;
+        
+        switch(action) {
+            case 'Clubs':
+                window.location.href = '/clubs';
+                break;
+            case 'Events':
+                window.location.href = '/events';
+                break;
+            case 'Members':
+                window.location.href = '/members';
+                break;
+            case 'Settings':
+                window.location.href = '/settings';
+                break;
+            default:
+                console.log('Action non définie');
+        }
+    });
+});
+</script>
 	<script src="vendors/scripts/core.js"></script>
 	<script src="vendors/scripts/script.min.js"></script>
 	<script src="vendors/scripts/process.js"></script>

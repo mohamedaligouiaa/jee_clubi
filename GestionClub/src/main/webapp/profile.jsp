@@ -1,9 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     <%@ page import="club.DatabaseConnection" %> 
-    <%@ page import="club.Club" %> 
+    
 <%@ page import="java.sql.*" %>
-<%@ page import ="java.util.ArrayList"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,9 +23,8 @@
 	<!-- CSS -->
 	<link rel="stylesheet" type="text/css" href="vendors/styles/core.css">
 	<link rel="stylesheet" type="text/css" href="vendors/styles/icon-font.min.css">
-	<link rel="stylesheet" type="text/css" href="src/plugins/datatables/css/dataTables.bootstrap4.min.css">
-	<link rel="stylesheet" type="text/css" href="src/plugins/datatables/css/responsive.bootstrap4.min.css">
 	<link rel="stylesheet" type="text/css" href="vendors/styles/style.css">
+
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"></script>
@@ -37,69 +35,32 @@
 
 		gtag('config', 'UA-119386393-1');
 	</script>
-	<style>
-		.club-cards {
-			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-			gap: 20px;
-			padding: 20px;
-		}
-		.club-card {
-			border-radius: 10px;
-			overflow: hidden;
-			box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-			transition: transform 0.3s ease, box-shadow 0.3s ease;
-			background: white;
-		}
-		.club-card:hover {
-			transform: translateY(-5px);
-			box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-		}
-		.club-image {
-			width: 100%;
-			height: 180px;
-			object-fit: cover;
-		}
-		.club-content {
-			padding: 20px;
-		}
-		.club-title {
-			font-size: 1.2rem;
-			margin-bottom: 10px;
-			color: #333;
-		}
-		.club-description {
-			color: #666;
-			margin-bottom: 15px;
-			font-size: 0.9rem;
-			line-height: 1.5;
-		}
-		.club-actions {
-			display: flex;
-			justify-content: flex-end;
-		}
-		.search-bar {
-			margin-bottom: 20px;
-			padding: 0 20px;
-		}
-	</style>
 </head>
 <body>
-	<% 
-String email = request.getParameter("email");
+<% 
 String sql = "SELECT * FROM users WHERE email = ?"; 
 String username="";
 String image="";
-int iduser = -1;
+String email="";
+String gender="";
+String city="";
+String role="";
+String fullname="";
+
 try (Connection c = DatabaseConnection.getConnection();
      PreparedStatement pst = c.prepareStatement(sql)) {
-     pst.setString(1, email);
+     pst.setString(1, request.getParameter("email"));
      
      try (ResultSet rs = pst.executeQuery()) {
          if (rs.next()) {
              username = rs.getString("username");
+             fullname = rs.getString("full_name");
              image = rs.getString("image");
-             iduser = rs.getInt("id");
+             email = rs.getString("email");
+             gender = rs.getString("gender");
+             city =rs.getString("city");
+             role=rs.getString("role");
+             
          }
      }
 } catch (SQLException e) {
@@ -204,6 +165,8 @@ try (Connection c = DatabaseConnection.getConnection();
 					<a href="javascript:void(0);" class="btn btn-outline-primary sidebar-dark active">Dark</a>
 				</div>
 
+				
+
 				<div class="reset-options pt-30 text-center">
 					<button class="btn btn-danger" id="reset-settings">Reset Settings</button>
 				</div>
@@ -234,12 +197,12 @@ try (Connection c = DatabaseConnection.getConnection();
 				<ul id="accordion-menu">
 					
 					<li>
-						<a href="dashboardStudent.jsp" class="dropdown-toggle no-arrow">
+						<a href="homeadmin.jsp" class="dropdown-toggle no-arrow">
 							<span class="micon dw dw-house-1"></span><span class="mtext">Home</span>
 						</a>
 					</li>
 					<li>
-						<a href="ajoutermembreclub.jsp" class="dropdown-toggle no-arrow">
+						<a href="clubs.jsp" class="dropdown-toggle no-arrow">
 							<span class="micon fa fa-group"></span><span class="mtext">Clubs</span>
 						</a>
 					</li>
@@ -250,43 +213,89 @@ try (Connection c = DatabaseConnection.getConnection();
 						</a>
 						
 					</li>
-					<li>
-						<a href="chatbot.jsp" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-chat3"></span><span class="mtext">Chatbot</span>
-						</a>
-					</li>
+					
 					
 					
 				</ul>
 			</div>
 		</div>
 	</div>
-
+	<div class="mobile-menu-overlay"></div>
 	<div class="main-container">
-		<div class="pd-ltr-20">
-			<div class="card-box mb-30">
-				<h2 class="h4 pd-20">Clubs</h2>
-				
-				<div class="club-cards">
-					<% ArrayList<Club> clubs = Club.afficherClubs();
-					for ( Club club : clubs ){%>
-					<div class="club-card">
-						<img src="vendors/images/<%=club.getImage() %>" alt="<%=club.getNom() %>" class="club-image">
-						<div class="club-content">
-							<h3 class="club-title"><%=club.getNom() %></h3>
-							<p class="club-description"><%=club.getDescription() %></p>
-							<div class="club-actions">
-								<a href="ClubmemberServlet?action=ajouter&club_id=<%= club.getId() %>&user_id=<%= iduser %>" role="button" class="btn btn-primary">
-									S'inscrire
-								</a>
+		<div class="pd-ltr-20 xs-pd-20-10">
+			<div class="min-height-200px">
+				<div class="page-header">
+					<div class="row">
+						<div class="col-md-12 col-sm-12">
+							<div class="title">
+								<h4>Profile</h4>
+							</div>
+							<nav aria-label="breadcrumb" role="navigation">
+								<ol class="breadcrumb">
+									<li class="breadcrumb-item"><a href="index.html">Home</a></li>
+									<li class="breadcrumb-item active" aria-current="page">Profile</li>
+								</ol>
+							</nav>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-30">
+						<div class="pd-20 card-box height-100-p">
+							<div class="profile-photo">
+								<a href="modal" data-toggle="modal" data-target="#modal" class="edit-avatar"><i class="fa fa-pencil"></i></a>
+								<img src="vendors/images/<%=image %>" alt="" class="avatar-photo">
+								<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-body pd-5">
+												<div class="img-container">
+													<img id="image" src="vendors/images/photo2.jpg" alt="Picture">
+												</div>
+											</div>
+											<div class="modal-footer">
+												<input type="submit" value="Update" class="btn btn-primary">
+												<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<h5 class="text-center h5 mb-0"><%=username %></h5>
+							<p class="text-center text-muted font-14"><%=role %></p>
+							<div class="profile-info">
+								<h5 class="mb-20 h5 text-blue">Contact Information</h5>
+								<ul>
+									<li>
+										<span>Full Name:</span>
+										<%=fullname %>
+									</li>
+									<li>
+									
+										<span>Email Address:</span>
+										<%=email %>
+									</li>
+									
+									<li>
+										<span>Country:</span>
+										<%=city %>
+									</li>
+									<li>
+										<span>Gender:</span>
+										<%=gender %>
+									</li>
+								</ul>
+							</div>
+
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
-					<% } %>
 				</div>
 			</div>
 			<div class="footer-wrap pd-20 mb-20 card-box">
-				Clubi -© All rights reserved
+				Clubi - ALL RIGHTS RESERVED 
 			</div>
 		</div>
 	</div>
@@ -295,11 +304,36 @@ try (Connection c = DatabaseConnection.getConnection();
 	<script src="vendors/scripts/script.min.js"></script>
 	<script src="vendors/scripts/process.js"></script>
 	<script src="vendors/scripts/layout-settings.js"></script>
-	<script src="src/plugins/apexcharts/apexcharts.min.js"></script>
-	<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
-	<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
-	<script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
-	<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
-	<script src="vendors/scripts/dashboard.js"></script>
+	<script src="src/plugins/cropperjs/dist/cropper.js"></script>
+	<script>
+		window.addEventListener('DOMContentLoaded', function () {
+			var image = document.getElementById('image');
+			var cropBoxData;
+			var canvasData;
+			var cropper;
+
+			$('#modal').on('shown.bs.modal', function () {
+				cropper = new Cropper(image, {
+					autoCropArea: 0.5,
+					dragMode: 'move',
+					aspectRatio: 3 / 3,
+					restore: false,
+					guides: false,
+					center: false,
+					highlight: false,
+					cropBoxMovable: false,
+					cropBoxResizable: false,
+					toggleDragModeOnDblclick: false,
+					ready: function () {
+						cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
+					}
+				});
+			}).on('hidden.bs.modal', function () {
+				cropBoxData = cropper.getCropBoxData();
+				canvasData = cropper.getCanvasData();
+				cropper.destroy();
+			});
+		});
+	</script>
 </body>
 </html>

@@ -51,7 +51,7 @@ try (Connection c = DatabaseConnection.getConnection();
          }
      }
 } catch (SQLException e) {
-    e.printStackTrace(); // À remplacer par un logger en production
+    e.printStackTrace(); // Replace with a logger in production
 }
 %>
 
@@ -220,29 +220,29 @@ try (Connection c = DatabaseConnection.getConnection();
 				<div class="pd-20 card-box mb-30">
 					<div class="clearfix">
 						<div class="pull-left">
-							<h4 class="text-blue h4">Ajouter un club</h4>
-							<p class="mb-30">2 minutes et cest termine !</p>
+							<h4 class="text-blue h4">Add a Club</h4>
+							<p class="mb-30">Just 2 minutes and you're done!</p>
 						</div>
 						
 					</div>
 					<form action="ClubServlet" method="post" enctype="multipart/form-data">
 						<input type="hidden" name="action" value="ajouter"/>
 						<div class="form-group">
-							<label>nom</label>
-							<input class="form-control" name="nom" type="text" placeholder="Saisir le nom du club">
+							<label>Name</label>
+							<input class="form-control" name="nom" type="text" placeholder="Enter club name">
 						</div>
 						
 						<div class="form-group">
 							
-										    <label for="image" class="col-form-label">Logo du club</label>
+										    <label for="image" class="col-form-label">Club Logo</label>
 										    
 										        <input type="file" class="form-control" id="image" name="image" accept="image/*" required onchange="previewImage(event)">
 										    
 										
-										<!-- Zone de prévisualisation -->
+										<!-- Preview area -->
 										<div class="form-group row mt-2">
 										    <div class="col-sm-8">
-										        <img id="imagePreview" src="#" alt="Aperçu de l'image" style="display: none; max-width: 100%; height: auto; border-radius: 8px;">
+										        <img id="imagePreview" src="#" alt="Image preview" style="display: none; max-width: 100%; height: auto; border-radius: 8px;">
 										    </div>
 										</div>
 										
@@ -267,7 +267,7 @@ try (Connection c = DatabaseConnection.getConnection();
 						
 						
 							<div class=" text-right">
-							<button type="submit" class="btn btn-primary">Ajouter</button>
+							<button type="submit" class="btn btn-primary">Add</button>
 						</div>
 						
 					</form>

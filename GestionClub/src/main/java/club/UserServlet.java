@@ -31,7 +31,7 @@ public class UserServlet extends HttpServlet {
     }
 
     private void ajoutUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String sql = "INSERT INTO users (image,email, username, password, full_name, gender, city,role) VALUES (?,?, ?,?,?,?,?,?);";  
+        String sql = "INSERT INTO users (image,email, username, password, full_name, gender, city, role) VALUES (?,?,?,?,?,?,?,?);";  
         String email = request.getParameter("email");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
@@ -48,28 +48,37 @@ public class UserServlet extends HttpServlet {
             String fileExtension = fileName.substring(fileName.lastIndexOf("."));
             imageName = "img_" + System.currentTimeMillis() + fileExtension;
             
-            // Définir le chemin correct vers le dossier images dans webapp/vendors/images
-            String uploadPath = getServletContext().getRealPath(UPLOAD_DIR);
-            System.out.println("Chemin absolu du dossier d'upload : " + uploadPath);
+            // Vérification du type de fichier
+            String allowedFileTypes = "image/jpeg image/png image/gif";
+            String contentType = filePart.getContentType();
             
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                boolean created = uploadDir.mkdirs();
-                if (created) {
-                    System.out.println("✅ Dossier créé : " + uploadPath);
-                } else {
-                    System.out.println("❌ Impossible de créer le dossier !");
+            if (allowedFileTypes.contains(contentType)) {
+                // Définir le chemin correct vers le dossier images dans webapp/vendors/images
+                String uploadPath = getServletContext().getRealPath(UPLOAD_DIR);
+                System.out.println("Chemin absolu du dossier d'upload : " + uploadPath);
+                
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists()) {
+                    boolean created = uploadDir.mkdirs();
+                    if (created) {
+                        System.out.println("✅ Dossier créé : " + uploadPath);
+                    } else {
+                        System.out.println("❌ Impossible de créer le dossier !");
+                    }
                 }
+                
+                // Enregistrer l'image
+                filePart.write(uploadPath + File.separator + imageName);
+                System.out.println("✅ Image enregistrée avec succès : " + uploadPath + File.separator + imageName);
+            } else {
+                request.setAttribute("errorMessage", "Seules les images (JPG, PNG, GIF) sont autorisées.");
+                request.getRequestDispatcher("formulaire.jsp").forward(request, response);
+                return;
             }
-            
-            // Enregistrer l'image
-            filePart.write(uploadPath + File.separator + imageName);
-            System.out.println("✅ Image enregistrée avec succès : " + uploadPath + File.separator + imageName);
         }
 
-        try {
-            Connection c = DatabaseConnection.getConnection();
-            PreparedStatement pst = c.prepareStatement(sql);
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement pst = c.prepareStatement(sql)) {
             pst.setString(1, imageName); 
             pst.setString(2, email);
             pst.setString(3, username);
@@ -81,8 +90,20 @@ public class UserServlet extends HttpServlet {
             pst.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            request.setAttribute("errorMessage", "Erreur lors de l'ajout de l'utilisateur.");
+            request.getRequestDispatcher("formulaire.jsp").forward(request, response);
+            return;
+        }
+        
+        if (role.equals("admin")) {
+            request.setAttribute("email", email);
+            request.getRequestDispatcher("dashboardadmin.jsp").forward(request, response);
+        } else {
+            request.setAttribute("email", email);
+            request.getRequestDispatcher("dashboardStudent.jsp").forward(request, response);
         }
     }
+
 
     private void modifieruser (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
     	String sql ="UPDATE users SET email=? ,username=?, password=?, full_name=?, gender=?, city=?,role=? WHERE id=? ;";
@@ -151,6 +172,7 @@ public class UserServlet extends HttpServlet {
 
         if ("ajouter".equals(action)) {
 		    ajoutUser(request, response);
+		    
 		} else if ("modifier".equals(action)) {
 		    modifieruser(request, response);
 		}

@@ -41,7 +41,7 @@ public class LoginServlet extends HttpServlet {
 
                 if (BCrypt.checkpw(password, hashedPassword)) {
                     request.setAttribute("email", email);
-                    String redirectPage = role.equals("admin") ? "dashboardadmin.jsp" : "dashboardetudiant.jsp";
+                    String redirectPage = role.equals("admin") ? "dashboardadmin.jsp" : "dashboardStudent.jsp";
                     request.getRequestDispatcher(redirectPage).forward(request, response);
                 } else {
                     // mot de passe incorrect
