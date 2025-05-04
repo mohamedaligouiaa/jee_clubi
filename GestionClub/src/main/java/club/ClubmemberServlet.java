@@ -67,8 +67,8 @@ public class ClubmemberServlet extends HttpServlet {
     	try {
     		Connection c = DatabaseConnection.getConnection();
     		PreparedStatement pst = c.prepareStatement(sql);
-    		pst.setInt(1, userid);
-    		pst.setInt(2, clubid);
+    		pst.setInt(2, userid);
+    		pst.setInt(1, clubid);
     		pst.executeUpdate();
     	}catch(SQLException e) {
     		e.printStackTrace();

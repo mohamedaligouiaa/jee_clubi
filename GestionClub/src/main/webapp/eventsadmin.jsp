@@ -292,13 +292,13 @@
 	
 <% 
 String email = request.getParameter("email");
-String sql = "SELECT * FROM users WHERE email = ?"; 
+String sql = "SELECT * FROM users WHERE role = ?"; 
 String username="";
 String image="";
 int iduser = -1;
 try (Connection c = DatabaseConnection.getConnection();
      PreparedStatement pst = c.prepareStatement(sql)) {
-     pst.setString(1, email);
+     pst.setString(1, "admin");
      
      try (ResultSet rs = pst.executeQuery()) {
          if (rs.next()) {
@@ -374,9 +374,10 @@ try (Connection c = DatabaseConnection.getConnection();
 						<span class="user-name"><%= username %></span>
 					</a>
 					<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-						<a class="dropdown-item" href="profile.jsp"><i class="dw dw-user1"></i> Profile</a>
-						
-						<a class="dropdown-item" href="login.jsp"><i class="dw dw-logout"></i> Log Out</a>
+						<a class="dropdown-item" href="profile.html"><i class="dw dw-user1"></i> Profile</a>
+						<a class="dropdown-item" href="profile.html"><i class="dw dw-settings2"></i> Setting</a>
+						<a class="dropdown-item" href="faq.html"><i class="dw dw-help"></i> Help</a>
+						<a class="dropdown-item" href="login.html"><i class="dw dw-logout"></i> Log Out</a>
 					</div>
 				</div>
 			</div>
@@ -438,23 +439,22 @@ try (Connection c = DatabaseConnection.getConnection();
 				<ul id="accordion-menu">
 					
 					<li>
-						<a href="dashboardStudent.jsp" class="dropdown-toggle no-arrow">
+						<a href="dashboardadmin.jsp" class="dropdown-toggle no-arrow">
 							<span class="micon dw dw-house-1"></span><span class="mtext">Home</span>
 						</a>
 					</li>
 					<li>
-						<a href="ajoutmembreclub.jsp" class="dropdown-toggle no-arrow">
+						<a href="ajoutclub.jsp" class="dropdown-toggle no-arrow">
 							<span class="micon fa fa-group"></span><span class="mtext">Clubs</span>
 						</a>
 					</li>
 					
 					<li>
-						<a href="events.jsp" class="dropdown-toggle no-arrow">
+						<a href="eventsadmin.jsp" class="dropdown-toggle no-arrow">
 							<span class="micon dw dw-television"></span><span class="mtext">Events</span>
 						</a>
 						
 					</li>
-					
 					
 				</ul>
 			</div>
@@ -567,12 +567,14 @@ try (Connection c = DatabaseConnection.getConnection();
                     <div class="event-description">
                         <p><%= rs.getString("description") %></p>
                     </div>
+                    <boton>
                 </div>
+                
                 <div class="event-footer">
     <span class="event-capacity"><i class="fas fa-user-check"></i> <%= rs.getInt("capacite") %> Available places</span>
     <div class="actions">
-        <a href="ticket.jsp?eventId=<%= rs.getString("id") %>" class="btn btn-primary">Register Now!</a>
-    </div>
+       
+        
 </div>
             </div>
             <%

@@ -277,6 +277,7 @@ try (Connection c = DatabaseConnection.getConnection();
 							<p class="club-description"><%=club.getDescription() %></p>
 							<div class="club-actions">
 								<a href="ClubmemberServlet?action=ajouter&club_id=<%= club.getId() %>&user_id=<%= iduser %>" role="button" class="btn btn-primary">
+
 									Register
 								</a>
 							</div>

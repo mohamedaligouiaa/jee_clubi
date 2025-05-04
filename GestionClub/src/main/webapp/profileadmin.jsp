@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     <%@ page import="club.DatabaseConnection" %> 
+    
 <%@ page import="java.sql.*" %>
 <!DOCTYPE html>
 <html>
@@ -40,6 +41,12 @@
 String sql = "SELECT * FROM users WHERE role = ?"; 
 String username="";
 String image="";
+String email="";
+String gender="";
+String city="";
+String role="";
+String fullname="";
+
 try (Connection c = DatabaseConnection.getConnection();
      PreparedStatement pst = c.prepareStatement(sql)) {
      pst.setString(1, "Admin");
@@ -47,11 +54,17 @@ try (Connection c = DatabaseConnection.getConnection();
      try (ResultSet rs = pst.executeQuery()) {
          if (rs.next()) {
              username = rs.getString("username");
+             fullname = rs.getString("full_name");
              image = rs.getString("image");
+             email = rs.getString("email");
+             gender = rs.getString("gender");
+             city =rs.getString("city");
+             role=rs.getString("role");
+             
          }
      }
 } catch (SQLException e) {
-    e.printStackTrace(); // Replace with a logger in production
+    e.printStackTrace(); // À remplacer par un logger en production
 }
 %>
 
@@ -208,93 +221,119 @@ try (Connection c = DatabaseConnection.getConnection();
 		</div>
 	</div>
 	<div class="mobile-menu-overlay"></div>
-
 	<div class="main-container">
 		<div class="pd-ltr-20 xs-pd-20-10">
-			
-							<!-- horizontal Basic Forms Start -->
-				<div class="pd-20 card-box mb-30">
-					<div class="clearfix">
-						<div class="pull-left">
-							<h4 class="text-blue h4">Add a Club</h4>
-							<p class="mb-30">Just 2 minutes and you're done!</p>
-						</div>
-						
-					</div>
-					<form action="ClubServlet" method="post" enctype="multipart/form-data">
-						<input type="hidden" name="action" value="ajouter"/>
-						<div class="form-group">
-							<label>Name</label>
-							<input class="form-control" name="nom" type="text" placeholder="Enter club name">
-						</div>
-						
-						<div class="form-group">
-							
-										    <label for="image" class="col-form-label">Club Logo</label>
-										    
-										        <input type="file" class="form-control" id="image" name="image" accept="image/*" required onchange="previewImage(event)">
-										    
-										
-										<!-- Preview area -->
-										<div class="form-group row mt-2">
-										    <div class="col-sm-8">
-										        <img id="imagePreview" src="#" alt="Image preview" style="display: none; max-width: 100%; height: auto; border-radius: 8px;">
-										    </div>
-										</div>
-										
-										<script>
-										    function previewImage(event) {
-										        var reader = new FileReader();
-										        reader.onload = function(){
-										            var output = document.getElementById('imagePreview');
-										            output.src = reader.result;
-										            output.style.display = 'block';
-										        };
-										        reader.readAsDataURL(event.target.files[0]);
-										    }
-										</script>
-
-						</div>
-						
-						<div class="form-group">
-							<label>Description</label>
-							<textarea class="form-control" name="description"></textarea>
-						</div>
-						
-						
-							<div class=" text-right">
-							<button type="submit" class="btn btn-primary">Add</button>
-						</div>
-						
-					</form>
-					<div class="collapse collapse-box" id="horizontal-basic-form1" >
-						<div class="code-box">
-							<div class="clearfix">
-								<a href="javascript:;" class="btn btn-primary btn-sm code-copy pull-left"  data-clipboard-target="#horizontal-basic"><i class="fa fa-clipboard"></i> Copy Code</a>
-								<a href="#horizontal-basic-form1" class="btn btn-primary btn-sm pull-right" rel="content-y"  data-toggle="collapse" role="button"><i class="fa fa-eye-slash"></i> Hide Code</a>
+			<div class="min-height-200px">
+				<div class="page-header">
+					<div class="row">
+						<div class="col-md-12 col-sm-12">
+							<div class="title">
+								<h4>Profile</h4>
 							</div>
-							<pre><code class="xml copy-pre" id="horizontal-basic">
-
-
-</code></pre>
+							<nav aria-label="breadcrumb" role="navigation">
+								<ol class="breadcrumb">
+									<li class="breadcrumb-item"><a href="index.html">Home</a></li>
+									<li class="breadcrumb-item active" aria-current="page">Profile</li>
+								</ol>
+							</nav>
 						</div>
 					</div>
 				</div>
-				<!-- horizontal Basic Forms End -->
+				<div class="row">
+					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-30">
+						<div class="pd-20 card-box height-100-p">
+							<div class="profile-photo">
+								<a href="modal" data-toggle="modal" data-target="#modal" class="edit-avatar"><i class="fa fa-pencil"></i></a>
+								<img src="vendors/images/<%=image %>" alt="" class="avatar-photo">
+								<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-body pd-5">
+												<div class="img-container">
+													<img id="image" src="vendors/images/photo2.jpg" alt="Picture">
+												</div>
+											</div>
+											<div class="modal-footer">
+												<input type="submit" value="Update" class="btn btn-primary">
+												<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<h5 class="text-center h5 mb-0"><%=username %></h5>
+							<p class="text-center text-muted font-14"><%=role %></p>
+							<div class="profile-info">
+								<h5 class="mb-20 h5 text-blue">Contact Information</h5>
+								<ul>
+									<li>
+										<span>Full Name:</span>
+										<%=fullname %>
+									</li>
+									<li>
+									
+										<span>Email Address:</span>
+										<%=email %>
+									</li>
+									
+									<li>
+										<span>Country:</span>
+										<%=city %>
+									</li>
+									<li>
+										<span>Gender:</span>
+										<%=gender %>
+									</li>
+								</ul>
+							</div>
 
-				
-
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="footer-wrap pd-20 mb-20 card-box">
-				Clubi -© All rights reserved
+				Clubi - ALL RIGHTS RESERVED 
 			</div>
 		</div>
 	</div>
-	
 	<!-- js -->
 	<script src="vendors/scripts/core.js"></script>
 	<script src="vendors/scripts/script.min.js"></script>
 	<script src="vendors/scripts/process.js"></script>
 	<script src="vendors/scripts/layout-settings.js"></script>
+	<script src="src/plugins/cropperjs/dist/cropper.js"></script>
+	<script>
+		window.addEventListener('DOMContentLoaded', function () {
+			var image = document.getElementById('image');
+			var cropBoxData;
+			var canvasData;
+			var cropper;
+
+			$('#modal').on('shown.bs.modal', function () {
+				cropper = new Cropper(image, {
+					autoCropArea: 0.5,
+					dragMode: 'move',
+					aspectRatio: 3 / 3,
+					restore: false,
+					guides: false,
+					center: false,
+					highlight: false,
+					cropBoxMovable: false,
+					cropBoxResizable: false,
+					toggleDragModeOnDblclick: false,
+					ready: function () {
+						cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
+					}
+				});
+			}).on('hidden.bs.modal', function () {
+				cropBoxData = cropper.getCropBoxData();
+				canvasData = cropper.getCanvasData();
+				cropper.destroy();
+			});
+		});
+	</script>
 </body>
 </html>

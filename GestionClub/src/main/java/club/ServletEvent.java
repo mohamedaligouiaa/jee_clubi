@@ -66,7 +66,7 @@ public class ServletEvent extends HttpServlet {
                 request.getSession().setAttribute("message", "Erreur lors de la suppression de l'événement.");
                 request.getSession().setAttribute("messageType", "error");
             }
-            response.sendRedirect("events.jsp");
+            response.sendRedirect("eventsadmin.jsp");
         }
     }
 
@@ -102,7 +102,7 @@ public class ServletEvent extends HttpServlet {
                 request.getSession().setAttribute("message", "Erreur lors de la modification de l'événement.");
                 request.getSession().setAttribute("messageType", "error");
             }
-            response.sendRedirect("events.jsp");
+            response.sendRedirect("eventsadmin.jsp");
         }
     }
 
